@@ -50,6 +50,46 @@ def init_db() -> sqlite3.Connection:
     create_tables(conn)
     return conn
 
+def insert_user(conn: sqlite3.Connection, user: dict) -> int:
+    """写入一个用户，返回数据库分配的ID。"""
+    cursor = conn.execute(
+        "INSERT INTO users (username, email) VALUES (?, ?)",
+        (user["username"], user["email"]),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def insert_video(conn: sqlite3.Connection, video: dict) -> int:
+    """写入一条视频，返回数据库分配的ID（报告表要用它做关联）。"""
+    cursor = conn.execute(
+        "INSERT INTO videos (title, views, likes, comments, category) VALUES (?, ?, ?, ?, ?)",
+        (video["title"], video["views"], video["likes"], video["comments"], video.get("category")),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def insert_report(conn: sqlite3.Connection, video_id: int, report: dict) -> int:
+    """写入一条分析报告，用 video_id 关联到视频表。"""
+    cursor = conn.execute(
+        "INSERT INTO reports (video_id, score, level) VALUES (?, ?, ?)",
+        (video_id, report["score"], report["level"]),
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def list_reports_with_video(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    """用 JOIN 把报告和对应视频一起查出来，按得分从高到低排。"""
+    return conn.execute(
+        """
+        SELECT v.title, v.views, r.score, r.level
+        FROM reports AS r
+        JOIN videos AS v ON v.id = r.video_id
+        ORDER BY r.score DESC
+        """
+    ).fetchall()
 
 def main() -> None:
     """自测：建连接、建表、插一条数据、读出来。"""
