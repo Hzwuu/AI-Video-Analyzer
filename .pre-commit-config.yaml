@@ -1,0 +1,18 @@
+# 提交前自动检查：ruff 代码规范 + 格式化
+# 安装钩子：pre-commit install（或 make hooks）
+# 注意：需在已激活虚拟环境的终端里提交（ruff 来自 .venv）
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check（代码规范）
+        entry: ruff check --fix --force-exclude
+        language: system
+        types: [python]
+        require_serial: true
+      - id: ruff-format
+        name: ruff format（代码格式化）
+        entry: ruff format --force-exclude
+        language: system
+        types: [python]
+        require_serial: true
