@@ -50,6 +50,7 @@ def init_db() -> sqlite3.Connection:
     create_tables(conn)
     return conn
 
+
 def insert_user(conn: sqlite3.Connection, user: dict) -> int:
     """写入一个用户，返回数据库分配的ID。"""
     cursor = conn.execute(
@@ -90,6 +91,7 @@ def list_reports_with_video(conn: sqlite3.Connection) -> list[sqlite3.Row]:
         ORDER BY r.score DESC
         """
     ).fetchall()
+
 
 def main() -> None:
     """自测：建连接、建表、插一条数据、读出来。"""
